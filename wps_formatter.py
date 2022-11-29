@@ -1006,19 +1006,32 @@ class WRFInputFormatter:
             tops = []
             bottoms = []
             for lev in range(0, nlevs):
-                # Need integers for levels...hence the round
-                if lev == 0:
-                    tops.append(0)
-                    bottoms.append(round(soil_levels[lev]))
+                if lev == nlevs - 1:
+                    tops.append(round(soil_levels[lev]))
+                    bottoms.append(200)
                     # Average for now
-                    lev_interp[:, 0, :, :] = varray[:, lev]
+                    lev_interp[:, lev, :, :] = varray[:, lev]
                 else:
-                    tops.append(round(soil_levels[lev - 1]))
-                    bottoms.append(round(soil_levels[lev]))
+                    tops.append(round(soil_levels[lev]))
+                    bottoms.append(round(soil_levels[lev + 1]))
                     # Average for now
                     lev_interp[:, lev, :, :] = 0.5 * (
-                        varray[:, lev] + varray[:, lev - 1]
+                        varray[:, lev] + varray[:, lev + 1]
                     )
+                
+                # Need integers for levels...hence the round
+                #if lev == 0:
+                #    tops.append(0)
+                #    bottoms.append(round(soil_levels[lev]))
+                    # Average for now
+                #    lev_interp[:, 0, :, :] = varray[:, lev]
+                #else:
+                #    tops.append(round(soil_levels[lev - 1]))
+                #    bottoms.append(round(soil_levels[lev]))
+                    # Average for now
+                #    lev_interp[:, lev, :, :] = 0.5 * (
+                #        varray[:, lev] + varray[:, lev - 1]
+                #    )   
         else:
             # Use the provided interpolation levels
             nt, nz, ny, nx = varray.shape
